@@ -59,14 +59,9 @@ public class Route {
     return inetSocketAddress;
   }
 
-  /** Returns true if this route uses modern tls. */
+  /** Returns true if this route uses modern TLS. */
   public boolean isModernTls() {
     return modernTls;
-  }
-
-  /** Returns a copy of this route with flipped tls mode. */
-  public Route flipTlsMode() {
-    return new Route(address, proxy, inetSocketAddress, !modernTls);
   }
 
   @Override public boolean equals(Object obj) {

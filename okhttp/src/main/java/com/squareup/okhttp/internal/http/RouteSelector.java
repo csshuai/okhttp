@@ -152,8 +152,9 @@ public final class RouteSelector {
     failedRoutes.add(failedRoute);
     if (!(failure instanceof SSLHandshakeException)) {
       // If the problem was not related to SSL then it will also fail with
-      // a different Tls mode therefore we can be proactive about it.
-      failedRoutes.add(failedRoute.flipTlsMode());
+      // a different TLS mode therefore we can be proactive about it.
+      failedRoutes.add(new Route(failedRoute.getAddress(), failedRoute.getProxy(),
+          failedRoute.getSocketAddress(), !failedRoute.isModernTls()));
     }
   }
 
