@@ -56,6 +56,7 @@ public final class OkHttpClient implements URLStreamHandlerFactory {
   private OkAuthenticator authenticator;
   private ConnectionPool connectionPool;
   private boolean followProtocolRedirects = true;
+  private Dispatcher dispatcher = new Dispatcher();
 
   public OkHttpClient() {
     this.failedRoutes = Collections.synchronizedSet(new LinkedHashSet<Route>());
@@ -258,6 +259,24 @@ public final class OkHttpClient implements URLStreamHandlerFactory {
 
   public List<String> getTransports() {
     return transports;
+  }
+
+  /**
+   * Schedules {@code request} to be executed.
+   */
+  public void enqueue(Request request, Response.Receiver responseReceiver) {
+    // Create the HttpURLConnection immediately so the enqueued job gets the current settings of
+    // this client. Otherwise changes to this client (socket factory, redirect policy, etc.) may
+    // incorrectly be reflected in the request when it is dispatched later.
+    dispatcher.enqueue(open(request.url()), request, responseReceiver);
+  }
+
+  /**
+   * Cancels all scheduled tasks tagged with {@code tag}. Requests that are already
+   * in flight might not be canceled.
+   */
+  public void cancel(Object tag) {
+    dispatcher.cancel(tag);
   }
 
   public HttpURLConnection open(URL url) {
